@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f4ee" />
+  <title>어떤 책을 추천할래?</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <p class="kicker">양천 독자들의 책 한마디</p>
+      <h1>어떤 책을 추천할래?</h1>
+      <p class="intro">책 제목이나 저자를 검색하고, 정확한 책을 고른 뒤 추천 또는 비추천 이유를 남겨보세요.</p>
+    </header>
+
+    <section class="search-card" aria-labelledby="search-title">
+      <h2 id="search-title" class="sr-only">책 검색</h2>
+      <form id="searchForm" class="search-row">
+        <input id="searchInput" type="search" autocomplete="off" placeholder="예: 아몬드, 손원평" aria-label="책 제목 또는 저자 검색" />
+        <button type="submit">책 검색</button>
+      </form>
+      <p id="searchHelp" class="help">처음에는 특정 책이 표시되지 않아요. 직접 검색해서 선택해 주세요.</p>
+      <div id="searchStatus" class="status" role="status" aria-live="polite"></div>
+      <div id="results" class="results"></div>
+    </section>
+
+    <section id="selectedSection" class="selected-section hidden" aria-live="polite">
+      <div class="selected-head">
+        <span class="step">선택한 책</span>
+        <button id="changeBook" class="ghost-btn" type="button">다른 책 검색</button>
+      </div>
+
+      <article class="book-detail">
+        <div class="cover-shell">
+          <img id="bookCover" class="cover" alt="" />
+          <div id="coverFallback" class="cover-fallback hidden">표지 없음</div>
+        </div>
+        <div class="book-copy">
+          <h2 id="bookTitle"></h2>
+          <p id="bookAuthors" class="authors"></p>
+          <dl class="meta-grid">
+            <div><dt>출판사</dt><dd id="bookPublisher"></dd></div>
+            <div><dt>출판년</dt><dd id="bookYear"></dd></div>
+            <div><dt>ISBN</dt><dd id="bookIsbn"></dd></div>
+          </dl>
+          <p id="bookContents" class="contents"></p>
+          <a id="bookLink" class="book-link" target="_blank" rel="noopener noreferrer">책 정보 더 보기 ↗</a>
+        </div>
+      </article>
+
+      <section class="review-box">
+        <p class="question">이 책을 다른 사람에게 어떻게 말해주고 싶나요?</p>
+
+        <div class="vote-toggle" role="radiogroup" aria-label="추천 여부">
+          <label>
+            <input type="radio" name="vote" value="recommend" checked />
+            <span>👍 추천해요</span>
+          </label>
+          <label>
+            <input type="radio" name="vote" value="not-recommend" />
+            <span>🤔 나는 비추천</span>
+          </label>
+        </div>
+
+        <label class="reason-label" for="reason">그 이유는?</label>
+        <textarea id="reason" maxlength="220" rows="5" placeholder="예: 읽는 내내 등장인물의 마음이 오래 남았어요. 친구에게도 권하고 싶어요."></textarea>
+        <div class="reason-bottom">
+          <span>한 문장도 좋아요.</span>
+          <span id="reasonCount">0/220</span>
+        </div>
+
+        <button id="submitOpinion" class="submit-btn" type="button">내 의견 띄우기</button>
+      </section>
+    </section>
+
+    <section id="opinionWall" class="opinion-wall hidden">
+      <div class="wall-head">
+        <div>
+          <p class="step">방금 남긴 의견</p>
+          <h2>책 옆에 한마디가 통통 💬</h2>
+        </div>
+      </div>
+      <div id="opinionBubble" class="opinion-bubble"></div>
+      <p class="demo-note">현재 버전은 화면 동작 확인용이라 새로고침하면 의견이 사라져요. 다음 단계에서 데이터베이스를 연결하면 여러 이용자의 글과 댓글을 계속 저장할 수 있어요.</p>
+    </section>
+
+    <footer>
+      <p>도서 정보: 알라딘 OpenAPI</p>
+    </footer>
+  </main>
+
+  <script src="/script.js"></script>
+</body>
+</html>
