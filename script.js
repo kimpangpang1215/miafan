@@ -70,7 +70,14 @@ async function searchBooks(query) {
 
   try {
     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const data = await response.json();
+    const raw = await response.text();
+
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error('책 검색 서버가 정상 응답하지 않았어요. 잠시 후 다시 시도해 주세요.');
+    }
 
     if (!response.ok) {
       throw new Error(data.error || '검색 중 오류가 발생했어요.');
