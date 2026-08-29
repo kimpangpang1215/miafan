@@ -70,14 +70,7 @@ async function searchBooks(query) {
 
   try {
     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const raw = await response.text();
-
-    let data;
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      throw new Error('책 검색 서버가 정상 응답하지 않았어요. 잠시 후 다시 시도해 주세요.');
-    }
+    const data = await response.json();
 
     if (!response.ok) {
       throw new Error(data.error || '검색 중 오류가 발생했어요.');
@@ -123,9 +116,10 @@ function selectBook(book) {
   }
 
   selectedSection.classList.remove('hidden');
-  opinionWall.classList.add('hidden');
+  opinionWall.classList.remove('hidden');
   reason.value = '';
   reasonCount.textContent = '0/220';
+  loadOpinions(book.isbn13 || book.isbn);
   selectedSection.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
@@ -139,19 +133,59 @@ searchForm.addEventListener('submit', (e) => {
   searchBooks(query);
 });
 
-changeBook.addEventListener('click', () => {
+function resetToSearch() {
   selectedBook = null;
   selectedSection.classList.add('hidden');
   opinionWall.classList.add('hidden');
+  results.innerHTML = '';
+  searchInput.value = '';
+  setStatus('');
   searchInput.focus();
   window.scrollTo({top:0, behavior:'smooth'});
-});
+}
+
+changeBook.addEventListener('click', resetToSearch);
+document.getElementById('anotherBook').addEventListener('click', resetToSearch);
 
 reason.addEventListener('input', () => {
   reasonCount.textContent = `${reason.value.length}/220`;
 });
 
-submitOpinion.addEventListener('click', () => {
+function renderOpinion(opinion) {
+  const voteText = opinion.vote === '추천' ? '👍 추천해요' : '🤔 나는 비추천';
+  return `
+    <article class="opinion-bubble">
+      <div class="vote">${voteText}</div>
+      <div class="book-mini">${escapeHtml(opinion.book_title || '')}</div>
+      <p class="text">${escapeHtml(opinion.reason || '')}</p>
+    </article>
+  `;
+}
+
+async function loadOpinions(isbn13) {
+  const list = document.getElementById('savedOpinions');
+  const status = document.getElementById('opinionStatus');
+  opinionBubble.innerHTML = '';
+  list.innerHTML = '';
+  status.textContent = '이 책에 남겨진 의견을 불러오는 중이에요…';
+
+  try {
+    const response = await fetch(`/api/opinions?isbn13=${encodeURIComponent(isbn13 || '')}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || '의견을 불러오지 못했어요.');
+
+    if (!data.length) {
+      status.textContent = '아직 이 책에 남겨진 의견이 없어요. 첫 한마디를 남겨보세요!';
+      return;
+    }
+    status.textContent = `이 책에 남겨진 의견 ${data.length}개`;
+    list.innerHTML = data.map(renderOpinion).join('');
+  } catch (err) {
+    status.textContent = err.message || '의견을 불러오지 못했어요.';
+  }
+}
+
+submitOpinion.addEventListener('click', async () => {
   if (!selectedBook) return;
   const text = reason.value.trim();
   if (!text) {
@@ -159,15 +193,42 @@ submitOpinion.addEventListener('click', () => {
     return;
   }
 
-  const vote = document.querySelector('input[name="vote"]:checked').value;
-  const voteText = vote === 'recommend' ? '👍 추천해요' : '🤔 나는 비추천';
+  const checked = document.querySelector('input[name="vote"]:checked');
+  const vote = checked && checked.value === 'not-recommend' ? '비추천' : '추천';
+  const isbn13 = selectedBook.isbn13 || selectedBook.isbn || '';
 
-  opinionBubble.innerHTML = `
-    <div class="vote">${voteText}</div>
-    <div class="book-mini">${escapeHtml(selectedBook.title)} · ${escapeHtml(selectedBook.author || '')}</div>
-    <p class="text">${escapeHtml(text)}</p>
-  `;
+  submitOpinion.disabled = true;
+  submitOpinion.textContent = '저장 중…';
 
-  opinionWall.classList.remove('hidden');
-  opinionWall.scrollIntoView({behavior:'smooth', block:'start'});
+  try {
+    const response = await fetch('/api/opinions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        isbn13,
+        book_title: selectedBook.title,
+        vote,
+        reason: text
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || '의견 저장에 실패했어요.');
+
+    const saved = Array.isArray(data) ? data[0] : data;
+    opinionBubble.innerHTML = `
+      <div class="vote">${vote === '추천' ? '👍 추천해요' : '🤔 나는 비추천'}</div>
+      <div class="book-mini">${escapeHtml(selectedBook.title)} · ${escapeHtml(selectedBook.author || '')}</div>
+      <p class="text">${escapeHtml(text)}</p>
+    `;
+    reason.value = '';
+    reasonCount.textContent = '0/220';
+    opinionWall.classList.remove('hidden');
+    await loadOpinions(isbn13);
+    opinionWall.scrollIntoView({behavior:'smooth', block:'start'});
+  } catch (err) {
+    alert(err.message || '의견 저장에 실패했어요.');
+  } finally {
+    submitOpinion.disabled = false;
+    submitOpinion.textContent = '내 의견 띄우기';
+  }
 });

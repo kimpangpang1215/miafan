@@ -51,9 +51,21 @@ Supabase 연결 후에는 다른 이용자가 접속해도 기존 의견을 볼 
 새로고침하거나 며칠 뒤 다시 접속해도 글이 남습니다.
 
 
-## v4 수정사항
-- 상단 문구를 `자양한강도서관 독자들의 책 한마디`로 변경
-- Vercel 최신 Function 방식에 맞춰 `api/search.mjs`로 변경
-- 검색 서버가 JSON이 아닌 오류 페이지를 반환해도 이용자에게 난해한 오류문 대신 안내문이 뜨도록 수정
+## Supabase 의견 저장
+Vercel Environment Variables:
+- SUPABASE_URL
+- SUPABASE_PUBLISHABLE_KEY
 
-기존 `api/search.js`는 삭제하고 `api/search.mjs`를 사용하세요.
+Supabase `opinions` table:
+- id int8 primary key
+- created_at timestamptz default now()
+- isbn13 text
+- book_title text
+- vote text
+- reason text
+
+RLS:
+- public SELECT using true
+- public INSERT with check true
+
+`api/opinions.js`가 저장/조회 요청을 처리합니다.

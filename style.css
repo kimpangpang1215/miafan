@@ -140,3 +140,22 @@ footer{text-align:center;padding-top:20px}
   .vote-toggle{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){.opinion-bubble{animation:none}}
+
+
+.saved-opinions {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+.saved-opinions .opinion-bubble {
+  margin: 0;
+}
+.another-book-btn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 13px 16px;
+}
+.submit-btn:disabled {
+  opacity: .65;
+  cursor: wait;
+}
