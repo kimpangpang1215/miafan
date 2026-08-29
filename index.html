@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>책 옆 한마디</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <section class="book-card">
+      <div class="cover-wrap">
+        <img
+          class="cover"
+          src="https://image.aladin.co.kr/product/29045/74/cover500/k292835563_1.jpg"
+          alt="불편한 편의점 책 표지"
+          onerror="this.style.display='none'; document.querySelector('.cover-fallback').style.display='flex';"
+        />
+        <div class="cover-fallback">책 표지</div>
+      </div>
+
+      <div class="book-info">
+        <p class="eyebrow">오늘 이 책, 어땠나요?</p>
+        <h1>불편한 편의점</h1>
+        <p class="meta">김호연 · 나무옆의자 · 한국소설</p>
+        <p class="desc">
+          서울의 한 편의점을 중심으로 여러 인물의 사연과 관계를 그린 장편소설입니다.
+          아래 독자들의 한마디를 읽고, 직접 추천 또는 아쉬운 점을 남겨보세요.
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="emoji">👍</span>
+            <strong id="yesCount">18</strong>
+            <span>추천해요</span>
+          </div>
+          <div class="stat">
+            <span class="emoji">👀</span>
+            <strong id="noCount">4</strong>
+            <span>아쉬워요</span>
+          </div>
+        </div>
+
+        <a class="shop-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=290457417" target="_blank" rel="noopener">
+          인터넷서점에서 책 정보 보기
+        </a>
+      </div>
+    </section>
+
+    <section class="wall-section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">독자들이 남긴</p>
+          <h2>한마디가 통통 💬</h2>
+        </div>
+        <button id="openForm" class="primary-btn" type="button">나도 남기기</button>
+      </div>
+
+      <div id="bubbleArea" class="bubble-grid">
+        <article class="bubble recommend">
+          <div class="bubble-top">
+            <span class="tag">👍 추천해요</span>
+            <span class="time">책콩 · 2일 전</span>
+          </div>
+          <p>등장인물들이 조금씩 연결되는 과정이 따뜻해서 좋았어요.</p>
+          <div class="actions">
+            <button class="like-btn" type="button">♡ 공감 <span>7</span></button>
+            <button class="reply-toggle" type="button">댓글 1</button>
+          </div>
+          <div class="reply-box hidden">
+            <p class="reply"><strong>달빛독자</strong> 저도 마지막 부분이 제일 좋았어요.</p>
+            <form class="reply-form">
+              <input maxlength="80" placeholder="댓글 한마디" aria-label="댓글 한마디" />
+              <button type="submit">등록</button>
+            </form>
+          </div>
+        </article>
+
+        <article class="bubble dislike">
+          <div class="bubble-top">
+            <span class="tag">👀 아쉬워요</span>
+            <span class="time">익명 · 4일 전</span>
+          </div>
+          <p>후반부는 조금 예상 가능한 방향으로 흘러간 느낌이었어요.</p>
+          <div class="actions">
+            <button class="like-btn" type="button">♡ 공감 <span>3</span></button>
+          </div>
+        </article>
+
+        <article class="bubble recommend wide">
+          <div class="bubble-top">
+            <span class="tag">👍 추천해요</span>
+            <span class="time">책산책 · 1주 전</span>
+          </div>
+          <p>무겁지 않게 읽히는데 읽고 나면 주변 사람을 한 번 더 보게 되는 책.</p>
+          <div class="actions">
+            <button class="like-btn" type="button">♡ 공감 <span>11</span></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="writePanel" class="write-panel hidden">
+      <h2>내 한마디 남기기</h2>
+      <form id="reviewForm">
+        <fieldset>
+          <legend>이 책을 어떻게 느꼈나요?</legend>
+          <div class="vote-row">
+            <label><input type="radio" name="vote" value="yes" checked /> 👍 추천해요</label>
+            <label><input type="radio" name="vote" value="no" /> 👀 아쉬워요</label>
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span>닉네임 <small>(선택)</small></span>
+          <input id="nickname" maxlength="12" placeholder="입력하지 않으면 익명" />
+        </label>
+
+        <label class="field">
+          <span>추천·비추천 이유</span>
+          <textarea id="reviewText" maxlength="140" required rows="4"
+            placeholder="이 책을 다음 독자에게 어떻게 소개하고 싶나요?"></textarea>
+        </label>
+
+        <div class="counter"><span>욕설·개인정보는 운영 시 관리자 검토 대상</span><span id="charCount">0/140</span></div>
+        <button class="submit-btn" type="submit">한마디 띄우기</button>
+      </form>
+    </section>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <p class="demo-note">
+      데모 버전: 새로고침하면 입력 내용이 초기화됩니다. 실제 운영 버전에서는 Supabase 같은 데이터베이스를 연결하면 의견과 댓글이 계속 저장됩니다.
+    </p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
